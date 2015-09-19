@@ -7,14 +7,16 @@ import Data.Text(toUpper)
 import qualified Data.ByteString.Lazy as B
 import qualified Data.ByteString.Lazy.Char8 as BC
 import Data.Text.Encoding (encodeUtf8)
-import Sereal.Constants (st_FALSE, st_TRUE, st_REFN, st_ARRAY, st_HASH, st_STR_UTF8, st_UNDEF, shortHashTag, shortArrayTag)
+import Sereal.Constants (st_FALSE, st_TRUE, st_REFN, st_ARRAY, st_HASH, st_STR_UTF8, st_UNDEF, shortIntTag, shortStrTag, shortHashTag, shortArrayTag)
 import Data.HashMap.Lazy(size)
 import qualified Data.Text as T
 import qualified Data.Vector as V
 import Data.Text (Text(..))
 import Data.String.Conversions (cs)
 import Data.Bits
+import Data.Scientific as DS
 import Data.Word(Word8)
+import Data.Char(isAscii)
 
 encode :: Aeson.Value -> B.ByteString
 encode val = B.concat [header, encode_content val]
@@ -40,17 +42,25 @@ encode_content (Aeson.Array array)
 
 encode_content (Aeson.String str) = encode_text str
 
-encode_content (Aeson.Number n) = encode_text $ cs $ show n
+encode_content (Aeson.Number n) = case DS.floatingOrInteger n of
+    Left r -> encode_text $ cs $ show n
+    Right i -> encode_int i
 
 encode_content (Aeson.Bool True) = st_TRUE
 encode_content (Aeson.Bool False) = st_FALSE
 
 encode_content (Aeson.Null) = st_UNDEF
 
+encode_int :: Integer -> B.ByteString
+encode_int i
+    | i >= -16 && i < 16 = shortIntTag $ fromIntegral i
+    | otherwise = varInt $fromInteger i
 
 
 encode_text :: Text -> B.ByteString
-encode_text text = B.concat [st_STR_UTF8, varInt n, cs $ encoded_text]
+encode_text text
+    | T.all isAscii text && n < 32 = B.concat [shortStrTag n, cs $ encoded_text]
+    | otherwise = B.concat [st_STR_UTF8, varInt n, cs $ encoded_text]
     where
         n = fromIntegral $ B.length $ cs encoded_text
         encoded_text = encoded_text
@@ -58,5 +68,5 @@ encode_text text = B.concat [st_STR_UTF8, varInt n, cs $ encoded_text]
 
 varInt :: Int -> B.ByteString
 varInt n
-    | n < 128 = B.singleton $ fromIntegral n
+    | n >= 0 && n < 128 = B.singleton $ fromIntegral n
     | otherwise = B.concat [B.singleton $ 0x80 .|. fromIntegral (0xFF .&. n), varInt (shiftR n 7)]

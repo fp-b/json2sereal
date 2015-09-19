@@ -128,7 +128,9 @@ st_SHORT_BINARY_29,
 st_SHORT_BINARY_30,
 st_SHORT_BINARY_31,
 shortHashTag,
-shortArrayTag
+shortArrayTag,
+shortStrTag,
+shortIntTag
 ) where
 
 import Data.ByteString.Lazy.Internal(ByteString)
@@ -433,3 +435,77 @@ shortArrayTags = V.fromList [
     ]
 shortArrayTag :: Int -> ByteString
 shortArrayTag = (V.!) shortArrayTags
+
+shortStrTags = V.fromList [
+    st_SHORT_BINARY_0,
+    st_SHORT_BINARY_1,
+    st_SHORT_BINARY_2,
+    st_SHORT_BINARY_3,
+    st_SHORT_BINARY_4,
+    st_SHORT_BINARY_5,
+    st_SHORT_BINARY_6,
+    st_SHORT_BINARY_7,
+    st_SHORT_BINARY_8,
+    st_SHORT_BINARY_9,
+    st_SHORT_BINARY_10,
+    st_SHORT_BINARY_11,
+    st_SHORT_BINARY_12,
+    st_SHORT_BINARY_13,
+    st_SHORT_BINARY_14,
+    st_SHORT_BINARY_15,
+    st_SHORT_BINARY_16,
+    st_SHORT_BINARY_17,
+    st_SHORT_BINARY_18,
+    st_SHORT_BINARY_19,
+    st_SHORT_BINARY_20,
+    st_SHORT_BINARY_21,
+    st_SHORT_BINARY_22,
+    st_SHORT_BINARY_23,
+    st_SHORT_BINARY_24,
+    st_SHORT_BINARY_25,
+    st_SHORT_BINARY_26,
+    st_SHORT_BINARY_27,
+    st_SHORT_BINARY_28,
+    st_SHORT_BINARY_29,
+    st_SHORT_BINARY_30,
+    st_SHORT_BINARY_31
+    ]
+shortStrTag :: Int -> ByteString
+shortStrTag = (V.!) shortStrTags
+
+shortIntTags = V.fromList[
+    st_NEG_16,
+    st_NEG_15,
+    st_NEG_14,
+    st_NEG_13,
+    st_NEG_12,
+    st_NEG_11,
+    st_NEG_10,
+    st_NEG_9,
+    st_NEG_8,
+    st_NEG_7,
+    st_NEG_6,
+    st_NEG_5,
+    st_NEG_4,
+    st_NEG_3,
+    st_NEG_2,
+    st_NEG_1,
+    st_POS_0,
+    st_POS_1,
+    st_POS_2,
+    st_POS_3,
+    st_POS_4,
+    st_POS_5,
+    st_POS_6,
+    st_POS_7,
+    st_POS_8,
+    st_POS_9,
+    st_POS_10,
+    st_POS_11,
+    st_POS_12,
+    st_POS_13,
+    st_POS_14,
+    st_POS_15
+    ]
+shortIntTag :: Int -> ByteString
+shortIntTag = (V.!) shortIntTags . ((+) 16)
