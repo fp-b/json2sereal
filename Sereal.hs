@@ -7,7 +7,7 @@ import Data.Text(toUpper)
 import qualified Data.ByteString.Lazy as B
 import qualified Data.ByteString.Lazy.Char8 as BC
 import Data.Text.Encoding (encodeUtf8)
-import Sereal.Constants (st_VARINT, st_FALSE, st_TRUE, st_REFN, st_ARRAY, st_HASH, st_STR_UTF8, st_UNDEF, shortIntTag, shortStrTag, shortHashTag, shortArrayTag)
+import Sereal.Constants (st_ZIGZAG, st_VARINT, st_FALSE, st_TRUE, st_REFN, st_ARRAY, st_HASH, st_STR_UTF8, st_UNDEF, shortIntTag, shortStrTag, shortHashTag, shortArrayTag)
 import Data.HashMap.Lazy(size)
 import qualified Data.Text as T
 import qualified Data.Vector as V
@@ -55,7 +55,7 @@ encode_int :: Integer -> B.ByteString
 encode_int i
     | i >= -16 && i < 16 = shortIntTag $ fromIntegral i
     | i >= 0 = B.concat [st_VARINT, varInt $ fromIntegral i]
-    | otherwise = cs $ show i
+    | otherwise = B.concat [st_ZIGZAG, varInt $ fromIntegral (-2*i-1)]
 
 
 encode_text :: Text -> B.ByteString
